@@ -1,27 +1,23 @@
 var request = require('superagent');
 var Request = request.Request;
 
-Request.prototype.then = function() {
+Request.prototype._getPromise = function() {
   var req = this;
-  var promise = new Promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     req.end(function(err, res) {
       if(err) return reject(err);
       resolve(res);
     });
   });
+};
 
+Request.prototype.then = function() {
+  var promise = this._getPromise();
   return promise.then.apply(promise, arguments);
 };
 
 Request.prototype.catch = function() {
-  var req = this;
-  var promise = new Promise(function(resolve, reject) {
-    req.end(function(err, res) {
-      if(err) return reject(err);
-      resolve(res);
-    });
-  });
-
+  var promise = this._getPromise();
   return promise.catch.apply(promise, arguments);
 };
 
